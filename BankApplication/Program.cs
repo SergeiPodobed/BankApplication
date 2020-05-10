@@ -1,19 +1,19 @@
 ﻿using System;
-using NewBankLibrary;
+using NewAirportLibrary;
 
-namespace BankApplication
+namespace AirportApplication
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Bank<Account> bank = new Bank<Account>("ЮнитБанк");
+            Airport<Ticket> airport = new Airport<Ticket>("Belavia");
             bool alive = true;
             while (alive)
             {
                 ConsoleColor color = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.DarkGreen; // выводим список команд зеленым цветом
-                Console.WriteLine("1. Открыть счет \t 2. Вывести средства  \t 3. Добавить на счет");
+                Console.WriteLine("1. Купить билет \t 2. Сдать билет  \t 3. Добавить на счет");
                 Console.WriteLine("4. Закрыть счет \t 5. Пропустить день \t 6. Выйти из программы");
                 Console.WriteLine("Введите номер пункта:");
                 Console.ForegroundColor = color;
@@ -24,16 +24,16 @@ namespace BankApplication
                     switch (command)
                     {
                         case 1:
-                            OpenAccount(bank);
+                            Choise(airport);
                             break;
                         case 2:
-                            Withdraw(bank);
+                            Out(airport);
                             break;
                         case 3:
-                            Put(bank);
+                            Put(airport);
                             break;
                         case 4:
-                            CloseAccount(bank);
+                            CanselTicket(airport);
                             break;
                         case 5:
                             break;
@@ -41,7 +41,7 @@ namespace BankApplication
                             alive = false;
                             continue;
                     }
-                    bank.CalculatePercentage();
+                    airport.CalculatePercentage();
                 }
                 catch (Exception ex)
                 {
@@ -53,31 +53,31 @@ namespace BankApplication
                 }
             }
         }
-        private static void OpenAccount(Bank<Account> bank)
+        private static void Choise(Airport<Ticket> airport)
         {
             Console.WriteLine("Укажите сумму для создания счета:");
 
             decimal sum = Convert.ToDecimal(Console.ReadLine());
             Console.WriteLine("Выберите тип счета: 1. До востребования 2. Депозит");
-            AccountType accountType;
+            TicketStatus ticketStatus;
 
             int type = Convert.ToInt32(Console.ReadLine());
 
             if (type == 2)
-                accountType = AccountType.Deposit;
+                ticketStatus = TicketStatus.Bought;
             else
-                accountType = AccountType.Ordinary;
+                ticketStatus = TicketStatus.Booked;
 
-            bank.Open(accountType,
+            airport.Choise(ticketStatus,
                 sum,
                 AddSumHandler,  // обработчик добавления средств на счет
-                WithdrawSumHandler, // обработчик вывода средств
-                (o, e) => Console.WriteLine(e.Message), // обработчик начислений процентов в виде лямбда-выражения
-                CloseAccountHandler, // обработчик закрытия счета
-                OpenAccountHandler); // обработчик открытия счета
+                OutSumHandler, // обработчик вывода средств
+                (o, k) => Console.WriteLine(k.Message), // обработчик начислений процентов в виде лямбда-выражения
+                CanselTicketHandler, // обработчик закрытия счета
+                ChoiseTicketHandler); // обработчик открытия счета
         }
 
-        private static void Withdraw(Bank<Account> bank)
+        private static void Out(Airport<Ticket> airport)
         {
             Console.WriteLine("Укажите сумму для вывода со счета:");
 
@@ -85,47 +85,47 @@ namespace BankApplication
             Console.WriteLine("Введите id счета:");
             int id = Convert.ToInt32(Console.ReadLine());
 
-            bank.Withdraw(sum, id);
+            airport.Out(sum, id);
         }
 
-        private static void Put(Bank<Account> bank)
+        private static void Put(Airport<Ticket> airport)
         {
             Console.WriteLine("Укажите сумму, чтобы положить на счет:");
             decimal sum = Convert.ToDecimal(Console.ReadLine());
             Console.WriteLine("Введите Id счета:");
             int id = Convert.ToInt32(Console.ReadLine());
-            bank.Put(sum, id);
+            airport.Put(sum, id);
         }
 
-        private static void CloseAccount(Bank<Account> bank)
+        private static void CanselTicket(Airport<Ticket> airport)
         {
             Console.WriteLine("Введите id счета, который надо закрыть:");
             int id = Convert.ToInt32(Console.ReadLine());
 
-            bank.Close(id);
+            airport.Cansel(id);
         }
         // обработчики событий класса Account
         // обработчик открытия счета
-        private static void OpenAccountHandler(object sender, AccountEventArgs e)
+        private static void ChoiseTicketHandler(object sender, TicketOfficeInd k)
         {
-            Console.WriteLine(e.Message);
+            Console.WriteLine(k.Message);
         }
         // обработчик добавления денег на счет
-        private static void AddSumHandler(object sender, AccountEventArgs e)
+        private static void AddSumHandler(object sender, TicketOfficeInd k)
         {
-            Console.WriteLine(e.Message);
+            Console.WriteLine(k.Message);
         }
         // обработчик вывода средств
-        private static void WithdrawSumHandler(object sender, AccountEventArgs e)
+        private static void OutSumHandler(object sender, TicketOfficeInd k)
         {
-            Console.WriteLine(e.Message);
-            if (e.Sum > 0)
+            Console.WriteLine(k.Message);
+            if (k.Sum > 0)
                 Console.WriteLine("Идем тратить деньги");
         }
         // обработчик закрытия счета
-        private static void CloseAccountHandler(object sender, AccountEventArgs e)
+        private static void CanselAccountHandler(object sender, TicketOfficeInd k)
         {
-            Console.WriteLine(e.Message);
+            Console.WriteLine(k.Message);
         }
     }
 }

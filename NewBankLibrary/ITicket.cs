@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NewBankLibrary
+namespace NewAirportLibrary
 {
-    public interface IAccount
+    public interface ITicketOffice
     {
         // Купить билет
         void Put(decimal sum);

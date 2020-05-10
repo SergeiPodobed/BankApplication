@@ -2,25 +2,25 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NewBankLibrary
+namespace NewAirportLibrary
 {
-    public abstract class Account : IAccount
+    public abstract class Ticket : ITicketOffice
     {
         //Событие, возникающее при выводе денег //сдаче билета
-        protected internal event AccountStateHandler Withdrawed;
+        protected internal event TicketOfficeInfo Out;
         // Событие возникающее при добавление на счет //покупке билета
-        protected internal event AccountStateHandler Added;
+        protected internal event TicketOfficeInfo Add;
         // Событие возникающее при открытии счета //выборе рейса - массив дат и рейсов
-        protected internal event AccountStateHandler Opened;
+        protected internal event TicketOfficeInfo Choise;
         // Событие возникающее при закрытии счета // выборе рейса - определение конкретного рейса
-        protected internal event AccountStateHandler Closed;
+        protected internal event TicketOfficeInfo Cansel;
         // Событие возникающее при начислении процентов // штраф за возрат билета
-        protected internal event AccountStateHandler Calculated;
+        protected internal event TicketOfficeInfo Calc;
 
         static int counter = 0;
         protected int _days = 0; // время с момента открытия счета // до даты вылета
 
-        public Account(decimal sum, int percentage)
+        public Ticket (decimal sum, int percentage)
         {
             Sum = sum;
             Percentage = percentage;
@@ -28,81 +28,81 @@ namespace NewBankLibrary
         }
 
         // Текущая сумма на счету   - стоимость купленного билета
-        public decimal Sum { get; private set; }
+        public decimal Sum { get; set; }
         // Процент начислений          -  процент штрафа
-        public int Percentage { get; private set; }
+        public int Percentage { get; set; }
         // Уникальный идентификатор счета      - номер билета
-        public int Id { get; private set; }
+        public int Id { get; set; }
         // вызов событий
-        private void CallEvent(AccountEventArgs e, AccountStateHandler handler)
+        private void CallEvent(TicketOfficeInd k, TicketOfficeInfo processor)
         {
-            if (e != null)
-                handler?.Invoke(this, e);
+            if (k != null)
+                processor?.Invoke(this, k);
         }
         // вызов отдельных событий. Для каждого события определяется свой витуальный метод
-        protected virtual void OnOpened(AccountEventArgs e)
+        protected virtual void OnChoise(TicketOfficeInd k)
         {
-            CallEvent(e, Opened);
+            CallEvent(k, Choise);
         }
-        protected virtual void OnWithdrawed(AccountEventArgs e)
+        protected virtual void OnOut(TicketOfficeInd k)
         {
-            CallEvent(e, Withdrawed);
+            CallEvent(k, Out);
         }
-        protected virtual void OnAdded(AccountEventArgs e)
+        protected virtual void OnAdd(TicketOfficeInd k)
         {
-            CallEvent(e, Added);
+            CallEvent(k, Add);
         }
-        protected virtual void OnClosed(AccountEventArgs e)
+        protected virtual void OnCansel(TicketOfficeInd k)
         {
-            CallEvent(e, Closed);
+            CallEvent(k, Cansel);
         }
-        protected virtual void OnCalculated(AccountEventArgs e)
+        protected virtual void OnCalc(TicketOfficeInd k)
         {
-            CallEvent(e, Calculated);
+            CallEvent(k, Calc);
         }
 
         public virtual void Put(decimal sum)
         {
             Sum += sum;
-            OnAdded(new AccountEventArgs("На счет поступило " + sum, sum));  
+            OnAdd(new TicketOfficeInd ("Куплено билетов " + sum, sum)); // куплено билетов на сумму 
         }
         // метод снятия со счета, возвращает сколько снято со счета  - возвращает сумму за вычетом штрафа
-        public virtual decimal Withdraw(decimal sum)
+        public virtual decimal Out(decimal sum)
         {
             decimal result = 0;
             if (Sum >= sum)
             {
                 Sum -= sum;
                 result = sum;
-                OnWithdrawed(new AccountEventArgs($"Сумма {sum} снята со счета {Id}", sum));
+                OnOut(new TicketOfficeInd($"Сумма {sum} возвращено билетов на сумму {Id}", sum));
             }
             else
             {
-                OnWithdrawed(new AccountEventArgs($"Недостаточно денег на счете {Id}", 0));
+                OnOut(new TicketOfficeInd($"Указано неверное число билетов {Id}", 0)); // указано неверное число билетов
             }
             return result;
         }
         // открытие счета
-        protected internal virtual void Open()
+        protected internal virtual void Choise()  //покупка билета
         {
-            OnOpened(new AccountEventArgs($"Открыт новый счет! Id счета: {Id}", Sum));
+            OnChoise(new TicketOfficeInd($"Куплен билет! Id билета: {Id}", Sum)); // куплен билет №
         }
         // закрытие счета
-        protected internal virtual void Close()
+        protected internal virtual void Cansel() //возврат билета
         {
-            OnClosed(new AccountEventArgs($"Счет {Id} закрыт.  Итоговая сумма: {Sum}", Sum));
+            OnCansel(new TicketOfficeInd($"Билет {Id} Аннулирован.  Сумма к возврату: {Sum}", Sum)); // билет закрыт, сумма к возврату --
         }
 
-        protected internal void IncrementDays()
+        protected internal void IncrementDays() // начисление штрафа
         {
             _days++;
         }
         // начисление процентов
-        protected internal virtual void Calculate()
+        protected internal virtual void Calc()
         {
             decimal increment = Sum * Percentage / 100;
             Sum = Sum + increment;
-            OnCalculated(new AccountEventArgs($"Начислены проценты в размере: {increment}", increment));
+            OnCalc(new TicketOfficeInd($"Начислен штраф в размере: {increment}", increment));
         }
     }
 }

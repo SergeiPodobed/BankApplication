@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29911.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankApplication", "BankApplication\BankApplication.csproj", "{FF4789D5-3512-47FF-AE37-79CED6632968}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AirportApplication", "BankApplication\AirportApplication.csproj", "{FF4789D5-3512-47FF-AE37-79CED6632968}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewBankLibrary", "NewBankLibrary\NewBankLibrary.csproj", "{A6816E6D-EA61-4250-B98F-979C62287DDE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewAirportLibrary", "NewBankLibrary\NewAirportLibrary.csproj", "{A6816E6D-EA61-4250-B98F-979C62287DDE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
